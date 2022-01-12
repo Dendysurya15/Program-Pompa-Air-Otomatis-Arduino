@@ -26,7 +26,6 @@ float avgIn, avgOut = 0;
 int idws = 77;
 //int log_time_unit  = 400;  // default is 1-minute between readings, 10=15secs 40=1min 200=5mins 400=10mins 2400=1hr
 int log_time_unit  = 139;  // default is 1-minute between readings, 10=15secs 40=1min 200=5mins 400=10mins 2400=1hr
-//int log_time_unit = 20;
 
 //declare ultrasonic [trig, echo]
 const int ultrasonic1[2] = {5, 18};
