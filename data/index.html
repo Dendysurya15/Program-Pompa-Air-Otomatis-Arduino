@@ -1,0 +1,149 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>DISTANCE CHART</title>
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: Arial, Helvetica, Sans-Serif;
+      Color: #000088;
+    }
+  </style>
+  <!-- load script file -->
+  <script type="text/javascript" src="code.min.js"></script>
+</head>
+
+<script>
+  // here we are preparing chart data ...
+  var chart_container = "container";
+  // here we are preparing chart data value (they can come e.g. from an embedded system)
+  mydata_3 = [3, 2, 8, 13, 3, 0, 0, 15, 6, 0, 15, 5, 0, 16, 12, 28, 18, 20, 16, 25, 16, 0, 5, 2];
+  // here we are preparing chart styles
+  style1 = ["pointcolor=rgba(0, 0, 0, 1)", "type=line", "linecolor=rgba(0, 0, 255, 1)", "fillcolor=rgba(0, 0, 255, 0.3)", "linewidth=3", "beziercurve=true", "points=true"];
+  style2 = ["pointcolor=rgba(0, 0, 0, 1)", "type=line", "linecolor=rgba(255, 0, 0, 1)", "fillcolor=rgba(255, 0, 0, 0.3)", "linewidth=3", "beziercurve=true", "points=true"];
+  //data = [mydata_3];
+  var poinX1 = new Array(10);
+  var poinY1 = new Array(10);
+  var poinY2 = new Array(10);
+
+  // description of X axis
+  desc = ["00:00", "00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00", "02:15", "02:30", "02:45",
+    "03:00", "03:15", "03:30", "03:45", "04:00", "04:15", "04:30", "04:45", "05:00", "05:15", "05:30", "05:45"];
+
+  for (let i = 0; i < 10; i++) {
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          poinY1[i] = parseFloat(this.responseText);
+        }
+      };
+      xhttp.open("GET", "/distancein" + i, true);
+      xhttp.send();
+    }, 1000);
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          poinY2[i] = parseFloat(this.responseText);
+        }
+      };
+      xhttp.open("GET", "/distanceout" + i, true);
+      xhttp.send();
+    }, 1000);
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          poinX1[i] = this.responseText;
+        }
+      };
+      xhttp.open("GET", "/time" + i, true);
+      xhttp.send();
+    }, 1000);
+  }
+
+  setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("distancein").innerHTML = this.responseText;
+        }
+      };
+      xhttp.open("GET", "/distancein", true);
+      xhttp.send();
+    }, 1000);
+
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("distanceout").innerHTML = this.responseText;
+        }
+      };
+      xhttp.open("GET", "/distanceout", true);
+      xhttp.send();
+    }, 1000);
+
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("timenow").innerHTML = this.responseText;
+        }
+      };
+      xhttp.open("GET", "/timenow", true);
+      xhttp.send();
+    }, 1000);
+
+  setInterval(function () {
+    document.getElementById("lvlin").innerHTML = poinY1[0];
+    document.getElementById("lvlout").innerHTML = poinY2[0];
+    var chart = new js_chart(chart_container, [poinY1, poinY2], [style1, style2], poinX1, "time of day", "CM");
+    chart.draw();
+  }, 1000);
+
+</script>
+
+<body onresize="chart.draw()">
+  <h3>
+    <center>DISTANCE CHART
+  </h3>
+  <span id="timenow">%time%</span>
+  <br>
+  IN
+  <span id="distancein">%DISTANCE%</span>
+  <sup class="units">CM | </sup>
+  OUT
+  <span id="distanceout">%DISTANCE%</span>
+  <sup class="units">CM</sup>
+  <br>
+  LVL IN
+  <span id="lvlin">%PRINT%</span>
+  <sup class="units">CM | </sup>
+  LVL OUT
+  <span id="lvlout">%PRINT%</span>
+  <sup class="units">CM</sup>
+
+  <script>
+    // make container for chart data 
+    document.write("<center><div id='" + chart_container + "' style='width: 80%; height: 80%; position: relative;'></div>");
+    // chart creating
+    //var chart = new js_chart(chart_container, [poinX], style, desc, "time of day", "CM");
+    // setting chart parameters
+    chart.descfpx = 15;
+    chart.hintfpx = 11;
+    chart.decimalY = 1;
+    // draw this chart
+    chart.draw();
+  </script>
+  <br>
+
+  <form action="/setup">
+<input type="submit" value='SETUP'>
+  </form>
+
+</body>
+
+</html>
